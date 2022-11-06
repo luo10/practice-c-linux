@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <fcntl.h>  // for open
+#include <unistd.h> // for close
 
 // ./a.out <pathname>
 int main(int argc, char *argv[])
@@ -24,9 +25,9 @@ int main(int argc, char *argv[])
     perror("open(): ");
     return -1;
   }
-  close(fd);
 
   printf(" fd = %d\n", fd);
 
+  close(fd);
   return 0;
 }
