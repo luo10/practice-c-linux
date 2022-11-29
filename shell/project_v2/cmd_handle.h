@@ -15,10 +15,11 @@ typedef struct command
   char cmd_arg_count;                  // 命令参数个数
 } cmd_t;
 
-void init_command_struct(cmd_t *pcmd);  // 初始化
-void print_command_struct(cmd_t *pcmd); // 打印
+void init_command_struct(cmd_t *pcmd); // 初始化
+void print_command_info(cmd_t *pcmd);  // 打印
 
 int cmd_parse(char *cmd_str, cmd_t *pcmd); // 解析字符串
+int cmd_dispatch(cmd_t *pcmd);
 
 extern int cmd_execute(char *cmd_str); // 命令执行入口
 

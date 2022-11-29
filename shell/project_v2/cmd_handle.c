@@ -18,7 +18,7 @@ int cmd_execute(char *cmd_str)
   init_command_struct(&command); // 初始化结构体
 
 #ifdef DEBUG
-  print_command_struct(&command); // 打印
+  print_command_info(&command); // 打印
 #endif
 
   ret = cmd_parse(cmd_str, &command); // 解析命令字符串
@@ -27,6 +27,13 @@ int cmd_execute(char *cmd_str)
   {
     return -1;
   }
+
+#ifdef DEBUG
+  print_command_info(&command);
+#endif
+  ret = cmd_dispatch(&command);
+  if (ret == -1)
+    return -1;
   return 0;
 }
 
@@ -43,7 +50,7 @@ void init_command_struct(cmd_t *pcmd) // 初始化
 
   pcmd->cmd_arg_count = 0;
 }
-void print_command_struct(cmd_t *pcmd) // 打印
+void print_command_info(cmd_t *pcmd) // 打印
 {
   int i;
 
@@ -57,7 +64,7 @@ void print_command_struct(cmd_t *pcmd) // 打印
     printf(" %s ", pcmd->cmd_arg_list[i]);
   }
 
-  printf("-------------------------\n");
+  printf("\n-------------------------\n");
 }
 
 // "cp 1.txt 2.txt"
@@ -90,5 +97,32 @@ int cmd_parse(char *cmd_str, cmd_t *pcmd)
 
   pcmd->cmd_arg_count = index; // 存储命令参数的个数
 
+#ifdef DEBUG
+  print_command_info(pcmd);
+#endif
+
+  return 0;
+}
+
+// 命令分发
+int cmd_dispatch(cmd_t *pcmd)
+{
+  if (pcmd == NULL)
+    return -1;
+
+  if (strcmp(pcmd->cmd_name, "ls") == 0)
+  {
+    // 调用 ls 命令处理模块
+#ifdef DEBUG
+    printf("ls command hanlde. \n");
+#endif
+  }
+  else if (strcmp(pcmd->cmd_name, "cp") == 0)
+  {
+    // 调用cp命令处理模块
+#ifdef DEBUG
+    printf("cp command hanlde. \n");
+#endif
+  }
   return 0;
 }
