@@ -18,6 +18,11 @@ extern int cmd_cp_execute(cmd_t *pcmd)
   if (ret == -1)
     return -1;
 
+  // 设置文件类型
+  ret = cmd_cp_parse_type(&fileinfo);
+  if (ret == -1)
+    return -1;
+
   return 0;
 }
 
@@ -53,10 +58,9 @@ enum file_type get_file_type(const char *path)
     perror("stat(): ");
     return FT_ERROR;
   }
-
   if (S_ISDIR(stat_info.st_mode)) // 判断为目录
     return FT_DIR;
-  else if (S_ISDIR(stat_info.st_mode)) // 普通文件
+  else if (S_ISREG(stat_info.st_mode)) // 普通文件
     return FT_FILE;
 
   return FT_UNKNOWN;
@@ -72,11 +76,69 @@ int cmd_cp_parse_type(cp_file_info_t *pfileinfo)
 
   // 获取源文件
   ftype = get_file_type(pfileinfo->src_path);
-
   if (ftype == FT_ERROR || ftype == FT_UNKNOWN)
     return -1;
   else
     pfileinfo->src_ftype = ftype; // 存储文件类型
+
+#ifdef DEBUG
+  if (pfileinfo->src_ftype == FT_FILE)
+    printf("FILE.\n");
+  else if (pfileinfo->src_ftype == FT_DIR)
+    printf("Dir.\n");
+#endif
+  return 0;
+}
+
+// 分发
+int cmd_cp_dispatch(cp_file_info_t *pfileinfo)
+{
+  if (pfileinfo->src_ftype == FT_FILE)
+  {
+    return cmd_cp_file(pfileinfo->src_path, pfileinfo->dest_path);
+  }
+  else if (pfileinfo->src_path == FT_DIR)
+  {
+    return cmd_cp_directory(pfileinfo->src_path, pfileinfo->dest_path);
+  }
+}
+
+int cmd_cp_file(const char *src, const char *dest)
+{
+  FILE *fp_src = NULL, *fp_dest = NULL;
+  size_t rbytes = 0, wbytes = 0;
+  char buffer[SZ_BUFFER] = {0};
+
+#ifdef DEBUG
+  printf("[DEBUG] %s ----> %s\n", src, dest);
+#endif
+
+  if (src == NULL || dest == NULL)
+    return -1;
+
+  fp_src = fopen(src, "r");
+  fp_dest = fopen(dest, "w+");
+
+  if (fp_src == NULL || fp_dest == NULL)
+    return -1;
+
+  for (;;)
+  {
+    rbytes = fread(buffer, sizeof(char), SZ_BUFFER, fp_src); // 读取
+    if (rbytes != 0)
+    {
+      wbytes = fwrite(buffer, sizeof(char), rbytes, fp_dest); // 写入
+      if (wbytes != rbytes)
+      {
+        perror("fwrite():");
+        return -1;
+      }
+    }
+    else
+      break;
+  }
+  fclose(fp_src);
+  fclose(fp_dest);
 
   return 0;
 }
