@@ -1,4 +1,5 @@
 #include "cmd_handle.h"
+#include "cmd_cp.h" // cp
 
 #define DEBUG
 int cmd_execute(char *cmd_str)
@@ -123,6 +124,7 @@ int cmd_dispatch(cmd_t *pcmd)
 #ifdef DEBUG
     printf("cp command hanlde. \n");
 #endif
+    cmd_cp_execute(pcmd);
   }
   return 0;
 }
