@@ -38,17 +38,28 @@ void Student::playGame(struct Student *pstu, const char *game)
   cout << "age: " << age << endl;
 }
 
+Student qstu; // 静态区对象
+
 int main(int argc, const char *argv[])
 {
-  Student stu;
-  // stu.name = "xiaoming";
-  // stu.age = 10;
-  // stu.score = 90;
+  Student stu;         // 栈区对象
+  static Student stu1; // 静态区对象
+
   stu.setName("xiaoming");
   stu.setAge(10);
   stu.setScore(90);
 
   stu.playGame(&stu, "King");
+
+  cout << "-----------------" << endl;
+
+  Student *pstu;
+
+  pstu = new Student; // 堆区对象
+  pstu->setName("tiechui");
+  pstu->setScore(0);
+  pstu->setAge(30);
+  pstu->playGame(pstu, "King");
 
   return 0;
 }

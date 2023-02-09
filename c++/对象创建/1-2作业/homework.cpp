@@ -1,4 +1,4 @@
-// 编写一个类描述时间对象，可以设置小时、分钟、秒，也可以输出设置的时间
+// 用时间类在栈区、静态区、堆区创建对象
 #include <iostream>
 
 using namespace std;
@@ -32,11 +32,21 @@ public:
   }
 };
 
+Timer static_time; // 静态区域
+
 int main(int argc, const char *argv[])
 {
-  Timer time;
-  time.setHour(11);
-  time.setMinutes(11);
-  time.setSeconds(11);
-  time.print();
+  Timer stack_time; // 栈区域
+  stack_time.setHour(11);
+  stack_time.setMinutes(11);
+  stack_time.setSeconds(11);
+  stack_time.print();
+
+  Timer *heap_time;
+  heap_time = new Timer;
+
+  heap_time->setHour(11);
+  heap_time->setMinutes(11);
+  heap_time->setSeconds(11);
+  heap_time->print();
 }
